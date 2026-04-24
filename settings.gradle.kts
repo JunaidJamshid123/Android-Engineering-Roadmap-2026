@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -21,3 +22,26 @@ dependencyResolutionManagement {
 
 rootProject.name = "PracticeApp"
 include(":app")
+
+// Core modules
+include(":core:core-ui")
+include(":core:core-data")
+include(":core:core-network")
+include(":core:core-database")
+include(":core:core-domain")
+include(":core:core-security")
+include(":core:core-common")
+include(":core:core-testing")
+
+// Feature modules
+include(":feature:feature-auth")
+include(":feature:feature-onboarding")
+include(":feature:feature-dashboard")
+include(":feature:feature-accounts")
+include(":feature:feature-transfers")
+include(":feature:feature-cards")
+include(":feature:feature-loans")
+include(":feature:feature-investments")
+include(":feature:feature-notifications")
+include(":feature:feature-profile")
+include(":feature:feature-kyc")
