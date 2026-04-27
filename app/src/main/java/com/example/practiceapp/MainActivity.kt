@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.practiceapp.ui.screens.home.HomeScreen
+import com.example.practiceapp.ui.screens.login.LoginScreen
 import com.example.practiceapp.ui.screens.splash.SplashScreen
 import com.example.practiceapp.ui.theme.PracticeAppTheme
 
@@ -21,11 +22,31 @@ class MainActivity : ComponentActivity() {
         setContent {
             PracticeAppTheme(darkTheme = false, dynamicColor = false) {
                 var showSplash by remember { mutableStateOf(true) }
+                var showLogin by remember { mutableStateOf(false) }
+                var showHome by remember { mutableStateOf(false) }
 
-                if (showSplash) {
-                    SplashScreen(onSplashFinished = { showSplash = false })
-                } else {
-                    HomeScreen(modifier = Modifier.fillMaxSize())
+                when {
+                    showSplash -> {
+                        SplashScreen(onSplashFinished = {
+                            showSplash = false
+                            showLogin = true
+                        })
+                    }
+                    showLogin -> {
+                        LoginScreen(
+                            onLoginSuccess = {
+                                showLogin = false
+                                showHome = true
+                            },
+                            onSignUpClick = {
+                                showLogin = false
+                                showHome = true
+                            }
+                        )
+                    }
+                    showHome -> {
+                        HomeScreen(modifier = Modifier.fillMaxSize())
+                    }
                 }
             }
         }
