@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -42,6 +44,28 @@ android {
 }
 
 dependencies {
+    // Core modules
+    implementation(project(":core:core-common"))
+    implementation(project(":core:core-domain"))
+    implementation(project(":core:core-data"))
+    implementation(project(":core:core-database"))
+    implementation(project(":core:core-network"))
+    implementation(project(":core:core-security"))
+    implementation(project(":core:core-ui"))
+
+    // Feature modules
+    implementation(project(":feature:feature-auth"))
+    implementation(project(":feature:feature-onboarding"))
+    implementation(project(":feature:feature-dashboard"))
+    implementation(project(":feature:feature-accounts"))
+    implementation(project(":feature:feature-transfers"))
+    implementation(project(":feature:feature-cards"))
+    implementation(project(":feature:feature-loans"))
+    implementation(project(":feature:feature-investments"))
+    implementation(project(":feature:feature-notifications"))
+    implementation(project(":feature:feature-profile"))
+    implementation(project(":feature:feature-kyc"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -51,6 +75,10 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

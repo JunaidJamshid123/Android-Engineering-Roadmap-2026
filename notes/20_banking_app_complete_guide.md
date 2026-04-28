@@ -583,15 +583,15 @@ class AppLifecycleObserver @Inject constructor(
 ```
 ╔════════════════════════════════════════════════════════════════════════╗
 ║  PHASE 1 — Project Foundation (Week 1-2)                              ║
-║  ─────────────────────────────────────                                 ║
+║  ─────────────────────────────────────                                ║
 ║  □ Multi-module project setup (app + core/* + feature/*)              ║
 ║  □ Convention plugins (build-logic)                                   ║
 ║  □ Version catalog (libs.versions.toml)                               ║
 ║  □ Hilt DI setup (across modules)                                     ║
 ║  □ Theme + Design system (colors, typography, components)             ║
-║  □ Core-network: Retrofit, OkHttp, interceptors, SSL pinning         ║
+║  □ Core-network: Retrofit, OkHttp, interceptors, SSL pinning          ║
 ║  □ Core-database: Room setup, base entities                           ║
-║  □ Core-security: EncryptedPrefs, SecurityManager stub               ║
+║  □ Core-security: EncryptedPrefs, SecurityManager stub                ║
 ║  □ Navigation shell (NavHost + BottomNavigation)                      ║
 ║  □ Splash screen (API 31+ Splash Screen API)                         ║
 ╠════════════════════════════════════════════════════════════════════════╣
