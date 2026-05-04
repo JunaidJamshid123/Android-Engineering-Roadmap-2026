@@ -50,7 +50,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BgWhite)
+            .background(BgGray)
             .statusBarsPadding()
     ) {
         Spacer(modifier = Modifier.height(24.dp))
@@ -112,19 +112,23 @@ fun LoginScreen(
         ) {
             if (selectedTab == 0) {
                 LoginTabContent(
-                    loginId = uiState.loginId,
-                    onLoginIdChange = viewModel::onLoginIdChange,
+                    phone = uiState.phone,
+                    onPhoneChange = viewModel::onPhoneChange,
                     password = uiState.password,
                     onPasswordChange = viewModel::onPasswordChange,
                     passwordVisible = uiState.isPasswordVisible,
                     onTogglePassword = viewModel::onTogglePasswordVisibility,
+                    mpin = uiState.mpin,
+                    onMpinChange = viewModel::onMpinChange,
+                    mpinVisible = uiState.isMpinVisible,
+                    onToggleMpin = viewModel::onToggleMpinVisibility,
                     onForgotPasswordClick = onForgotPasswordClick,
                     onLoginClick = viewModel::onLoginClick,
                     isLoading = uiState.isLoading,
                     error = uiState.error
                 )
             } else {
-                SignUpContent(onSignUpClick = onSignUpClick)
+                SignUpContent(onSignUpSuccess = onSignUpClick)
             }
         }
     }
@@ -166,23 +170,27 @@ private fun TabItem(
 
 @Composable
 private fun LoginTabContent(
-    loginId: String,
-    onLoginIdChange: (String) -> Unit,
+    phone: String,
+    onPhoneChange: (String) -> Unit,
     password: String,
     onPasswordChange: (String) -> Unit,
     passwordVisible: Boolean,
     onTogglePassword: () -> Unit,
+    mpin: String,
+    onMpinChange: (String) -> Unit,
+    mpinVisible: Boolean,
+    onToggleMpin: () -> Unit,
     onForgotPasswordClick: () -> Unit,
     onLoginClick: () -> Unit,
     isLoading: Boolean,
     error: String?
 ) {
-    FieldLabel("Login Id")
+    FieldLabel("Phone Number")
     UnderlineTextField(
-        value = loginId,
-        onValueChange = onLoginIdChange,
-        placeholder = "Enter your login ID",
-        keyboardType = KeyboardType.Text,
+        value = phone,
+        onValueChange = onPhoneChange,
+        placeholder = "+92 3XX XXXXXXX",
+        keyboardType = KeyboardType.Phone,
         imeAction = ImeAction.Next
     )
     Spacer(modifier = Modifier.height(28.dp))
@@ -196,6 +204,19 @@ private fun LoginTabContent(
         passwordVisible = passwordVisible,
         onTogglePassword = onTogglePassword,
         keyboardType = KeyboardType.Password,
+        imeAction = ImeAction.Next
+    )
+    Spacer(modifier = Modifier.height(28.dp))
+
+    FieldLabel("MPIN")
+    UnderlineTextField(
+        value = mpin,
+        onValueChange = onMpinChange,
+        placeholder = "4-digit MPIN",
+        isPassword = true,
+        passwordVisible = mpinVisible,
+        onTogglePassword = onToggleMpin,
+        keyboardType = KeyboardType.NumberPassword,
         imeAction = ImeAction.Done
     )
 
@@ -211,7 +232,7 @@ private fun LoginTabContent(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "Forgot ID?",
+            text = "Forgot MPIN?",
             fontSize = 13.sp,
             color = NexusGreen,
             fontWeight = FontWeight.Medium,

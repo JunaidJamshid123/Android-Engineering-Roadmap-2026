@@ -51,13 +51,19 @@ class TokenAuthenticator @Inject constructor(
                 }
 
                 if (refreshResponse.isSuccessful) {
-                    val body = refreshResponse.body()!!
-                    tokenProvider.saveTokens(body.accessToken, body.refreshToken)
+                    val apiResponse = refreshResponse.body()
+                    val data = apiResponse?.data
+                    if (data != null) {
+                        tokenProvider.saveTokens(data.accessToken, data.refreshToken)
 
-                    response.request.newBuilder()
-                        .header("Authorization", "Bearer ${body.accessToken}")
-                        .header("X-Retry", "true")
-                        .build()
+                        response.request.newBuilder()
+                            .header("Authorization", "Bearer ${data.accessToken}")
+                            .header("X-Retry", "true")
+                            .build()
+                    } else {
+                        tokenProvider.clearTokens()
+                        null
+                    }
                 } else {
                     tokenProvider.clearTokens()
                     null

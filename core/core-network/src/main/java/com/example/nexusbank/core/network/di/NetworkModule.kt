@@ -47,7 +47,6 @@ object NetworkModule {
             }
         }
     }
-
     @Provides
     @Singleton
     fun provideOkHttpClient(
@@ -107,15 +106,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideAuthApiService(
-        @AuthOkHttpClient okHttpClient: OkHttpClient,
-        json: Json
+        retrofit: Retrofit
     ): AuthApiService {
-        val contentType = "application/json".toMediaType()
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(json.asConverterFactory(contentType))
-            .build()
-            .create(AuthApiService::class.java)
+        return retrofit.create(AuthApiService::class.java)
     }
 }

@@ -12,30 +12,51 @@ import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
-data class LoginUiState(
+data class SignUpUiState(
+    val fullName: String = "",
     val phone: String = "",
+    val email: String = "",
+    val dateOfBirth: String = "",
+    val gender: String = "",
     val password: String = "",
     val mpin: String = "",
     val isPasswordVisible: Boolean = false,
     val isMpinVisible: Boolean = false,
+    val termsAccepted: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val isLoginSuccess: Boolean = false
+    val isSignUpSuccess: Boolean = false
 )
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
+class SignUpViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(SignUpUiState())
+    val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
+
+    fun onFullNameChange(value: String) {
+        _uiState.update { it.copy(fullName = value, error = null) }
+    }
 
     fun onPhoneChange(value: String) {
         val filtered = value.filter { it.isDigit() || it == '+' }
         if (filtered.length <= 13) {
             _uiState.update { it.copy(phone = filtered, error = null) }
         }
+    }
+
+    fun onEmailChange(value: String) {
+        _uiState.update { it.copy(email = value, error = null) }
+    }
+
+    fun onDateOfBirthChange(value: String) {
+        _uiState.update { it.copy(dateOfBirth = value, error = null) }
+    }
+
+    fun onGenderChange(value: String) {
+        _uiState.update { it.copy(gender = value, error = null) }
     }
 
     fun onPasswordChange(value: String) {
@@ -57,27 +78,55 @@ class LoginViewModel @Inject constructor(
         _uiState.update { it.copy(isMpinVisible = !it.isMpinVisible) }
     }
 
-    fun onLoginClick() {
+    fun onTermsAcceptedChange(value: Boolean) {
+        _uiState.update { it.copy(termsAccepted = value) }
+    }
+
+    fun onSignUpClick() {
         val state = _uiState.value
+        if (state.fullName.isBlank()) {
+            _uiState.update { it.copy(error = "Full name is required") }
+            return
+        }
         if (state.phone.isBlank()) {
             _uiState.update { it.copy(error = "Phone number is required") }
             return
         }
-        if (state.password.isBlank()) {
-            _uiState.update { it.copy(error = "Password is required") }
+        if (state.email.isBlank()) {
+            _uiState.update { it.copy(error = "Email is required") }
             return
         }
-        if (state.mpin.isBlank() || state.mpin.length != 4) {
-            _uiState.update { it.copy(error = "4-digit MPIN is required") }
+        if (state.dateOfBirth.isBlank()) {
+            _uiState.update { it.copy(error = "Date of birth is required") }
+            return
+        }
+        if (state.gender.isBlank()) {
+            _uiState.update { it.copy(error = "Please select gender") }
+            return
+        }
+        if (state.password.length < 8) {
+            _uiState.update { it.copy(error = "Password must be at least 8 characters") }
+            return
+        }
+        if (state.mpin.length != 4) {
+            _uiState.update { it.copy(error = "MPIN must be 4 digits") }
             return
         }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            when (val result = authRepository.login(state.phone, state.password, state.mpin)) {
+            when (val result = authRepository.register(
+                phone = state.phone,
+                fullName = state.fullName,
+                email = state.email,
+                dateOfBirth = state.dateOfBirth,
+                gender = state.gender,
+                password = state.password,
+                mpin = state.mpin
+            )) {
                 is Resource.Success -> {
-                    _uiState.update { it.copy(isLoading = false, isLoginSuccess = true) }
+                    _uiState.update { it.copy(isLoading = false, isSignUpSuccess = true) }
                 }
                 is Resource.Error -> {
                     _uiState.update { it.copy(isLoading = false, error = result.message) }

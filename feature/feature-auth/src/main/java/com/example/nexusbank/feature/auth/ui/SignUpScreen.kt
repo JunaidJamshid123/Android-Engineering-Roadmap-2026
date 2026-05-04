@@ -23,30 +23,28 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.nexusbank.core.ui.theme.*
 
 @Composable
 fun SignUpContent(
-    onSignUpClick: () -> Unit = {}
+    onSignUpSuccess: () -> Unit = {},
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
-    var fullName by remember { mutableStateOf("") }
-    var cnicNumber by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var dateOfBirth by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var confirmPasswordVisible by remember { mutableStateOf(false) }
-    var termsAccepted by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsState()
+    var genderExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState.isSignUpSuccess) {
+        if (uiState.isSignUpSuccess) onSignUpSuccess()
+    }
 
     SectionLabel("Personal Information")
     Spacer(modifier = Modifier.height(16.dp))
 
     SignUpIconField(
-        label = "Full Name (as per CNIC)",
-        value = fullName,
-        onValueChange = { fullName = it },
+        label = "Full Name",
+        value = uiState.fullName,
+        onValueChange = viewModel::onFullNameChange,
         placeholder = "Enter your full name",
         icon = Icons.Default.Person,
         keyboardType = KeyboardType.Text
@@ -54,26 +52,74 @@ fun SignUpContent(
     Spacer(modifier = Modifier.height(20.dp))
 
     SignUpIconField(
-        label = "CNIC Number",
-        value = cnicNumber,
-        onValueChange = { newValue ->
-            val filtered = newValue.filter { it.isDigit() || it == '-' }
-            if (filtered.length <= 15) cnicNumber = filtered
-        },
-        placeholder = "XXXXX-XXXXXXX-X",
-        icon = Icons.Default.CreditCard,
+        label = "Date of Birth",
+        value = uiState.dateOfBirth,
+        onValueChange = viewModel::onDateOfBirthChange,
+        placeholder = "YYYY-MM-DD",
+        icon = Icons.Default.CalendarToday,
         keyboardType = KeyboardType.Number
     )
     Spacer(modifier = Modifier.height(20.dp))
 
-    SignUpIconField(
-        label = "Date of Birth",
-        value = dateOfBirth,
-        onValueChange = { dateOfBirth = it },
-        placeholder = "DD/MM/YYYY",
-        icon = Icons.Default.CalendarToday,
-        keyboardType = KeyboardType.Number
-    )
+    // Gender dropdown
+    Column {
+        Text(
+            text = "Gender",
+            fontSize = 13.sp,
+            color = TextMedium,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Box {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { genderExpanded = true }
+                    .padding(vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    tint = TextLight,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.size(12.dp))
+                Text(
+                    text = uiState.gender.ifEmpty { "Select gender" },
+                    fontSize = 15.sp,
+                    color = if (uiState.gender.isEmpty()) TextLight else TextDark,
+                    modifier = Modifier.weight(1f)
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    tint = TextLight,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            DropdownMenu(
+                expanded = genderExpanded,
+                onDismissRequest = { genderExpanded = false }
+            ) {
+                listOf("MALE", "FEMALE", "OTHER").forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option, fontSize = 15.sp) },
+                        onClick = {
+                            viewModel.onGenderChange(option)
+                            genderExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(FieldLineColor)
+        )
+    }
 
     Spacer(modifier = Modifier.height(32.dp))
 
@@ -81,12 +127,9 @@ fun SignUpContent(
     Spacer(modifier = Modifier.height(16.dp))
 
     SignUpIconField(
-        label = "Mobile Number",
-        value = phoneNumber,
-        onValueChange = { newValue ->
-            val filtered = newValue.filter { it.isDigit() || it == '+' }
-            if (filtered.length <= 13) phoneNumber = filtered
-        },
+        label = "Phone Number",
+        value = uiState.phone,
+        onValueChange = viewModel::onPhoneChange,
         placeholder = "+92 3XX XXXXXXX",
         icon = Icons.Default.Phone,
         keyboardType = KeyboardType.Phone
@@ -95,8 +138,8 @@ fun SignUpContent(
 
     SignUpIconField(
         label = "Email Address",
-        value = email,
-        onValueChange = { email = it },
+        value = uiState.email,
+        onValueChange = viewModel::onEmailChange,
         placeholder = "Enter your email",
         icon = Icons.Default.Email,
         keyboardType = KeyboardType.Email
@@ -104,32 +147,32 @@ fun SignUpContent(
 
     Spacer(modifier = Modifier.height(32.dp))
 
-    SectionLabel("Set Password")
+    SectionLabel("Security")
     Spacer(modifier = Modifier.height(16.dp))
 
     SignUpIconField(
         label = "Password",
-        value = password,
-        onValueChange = { password = it },
+        value = uiState.password,
+        onValueChange = viewModel::onPasswordChange,
         placeholder = "Min. 8 characters",
         icon = Icons.Default.Lock,
         isPassword = true,
-        passwordVisible = passwordVisible,
-        onTogglePassword = { passwordVisible = !passwordVisible },
+        passwordVisible = uiState.isPasswordVisible,
+        onTogglePassword = viewModel::onTogglePasswordVisibility,
         keyboardType = KeyboardType.Password
     )
     Spacer(modifier = Modifier.height(20.dp))
 
     SignUpIconField(
-        label = "Confirm Password",
-        value = confirmPassword,
-        onValueChange = { confirmPassword = it },
-        placeholder = "Re-enter your password",
-        icon = Icons.Default.Lock,
+        label = "MPIN (4-digit)",
+        value = uiState.mpin,
+        onValueChange = viewModel::onMpinChange,
+        placeholder = "Enter 4-digit MPIN",
+        icon = Icons.Default.Pin,
         isPassword = true,
-        passwordVisible = confirmPasswordVisible,
-        onTogglePassword = { confirmPasswordVisible = !confirmPasswordVisible },
-        keyboardType = KeyboardType.Password,
+        passwordVisible = uiState.isMpinVisible,
+        onTogglePassword = viewModel::onToggleMpinVisibility,
+        keyboardType = KeyboardType.NumberPassword,
         imeAction = ImeAction.Done
     )
 
@@ -140,8 +183,8 @@ fun SignUpContent(
         verticalAlignment = Alignment.Top
     ) {
         Checkbox(
-            checked = termsAccepted,
-            onCheckedChange = { termsAccepted = it },
+            checked = uiState.termsAccepted,
+            onCheckedChange = viewModel::onTermsAcceptedChange,
             colors = CheckboxDefaults.colors(
                 checkedColor = NexusGreen,
                 uncheckedColor = FieldLineColor
@@ -169,24 +212,37 @@ fun SignUpContent(
         }
     }
 
+    if (uiState.error != null) {
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = uiState.error!!, fontSize = 13.sp, color = Color.Red)
+    }
+
     Spacer(modifier = Modifier.height(28.dp))
 
     Button(
-        onClick = onSignUpClick,
+        onClick = viewModel::onSignUpClick,
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp),
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(containerColor = NexusGreen),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
-        enabled = termsAccepted
+        enabled = uiState.termsAccepted && !uiState.isLoading
     ) {
-        Text(
-            text = "Create Account",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color.White
-        )
+        if (uiState.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                color = Color.White,
+                strokeWidth = 2.dp
+            )
+        } else {
+            Text(
+                text = "Create Account",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White
+            )
+        }
     }
 
     Spacer(modifier = Modifier.height(32.dp))

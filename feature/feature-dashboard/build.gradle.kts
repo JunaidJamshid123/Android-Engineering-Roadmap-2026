@@ -34,6 +34,7 @@ dependencies {
     implementation(project(":core:core-network"))
     implementation(project(":core:core-database"))
     implementation(project(":core:core-security"))
+    implementation(project(":feature:feature-auth"))
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

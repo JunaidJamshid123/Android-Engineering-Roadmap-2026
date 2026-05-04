@@ -7,8 +7,8 @@ import javax.inject.Inject
 class SendOtpUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(phone: String): Resource<String> {
+    suspend operator fun invoke(phone: String): Resource<Boolean> {
         if (phone.isBlank()) return Resource.Error("Phone number is required")
-        return authRepository.sendOtp(phone)
+        return authRepository.checkPhone(phone)
     }
 }

@@ -14,7 +14,7 @@ android {
         minSdk = 24
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"https://api.nexusbank.com/v1/\"")
+        buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5000/api/\"")
     }
 
     buildFeatures {
@@ -34,7 +34,7 @@ dependencies {
     implementation(project(":core:core-common"))
 
     // Networking
-    implementation(libs.retrofit)
+    api(libs.retrofit)
     implementation(libs.retrofit.serialization)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)

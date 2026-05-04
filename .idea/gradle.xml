@@ -35,17 +35,9 @@
             <option value="$PROJECT_DIR$/core/core-testing" />
             <option value="$PROJECT_DIR$/core/core-ui" />
             <option value="$PROJECT_DIR$/feature" />
-            <option value="$PROJECT_DIR$/feature/feature-accounts" />
             <option value="$PROJECT_DIR$/feature/feature-auth" />
-            <option value="$PROJECT_DIR$/feature/feature-cards" />
             <option value="$PROJECT_DIR$/feature/feature-dashboard" />
-            <option value="$PROJECT_DIR$/feature/feature-investments" />
-            <option value="$PROJECT_DIR$/feature/feature-kyc" />
-            <option value="$PROJECT_DIR$/feature/feature-loans" />
-            <option value="$PROJECT_DIR$/feature/feature-notifications" />
             <option value="$PROJECT_DIR$/feature/feature-onboarding" />
-            <option value="$PROJECT_DIR$/feature/feature-profile" />
-            <option value="$PROJECT_DIR$/feature/feature-transfers" />
           </set>
         </option>
       </GradleProjectSettings>

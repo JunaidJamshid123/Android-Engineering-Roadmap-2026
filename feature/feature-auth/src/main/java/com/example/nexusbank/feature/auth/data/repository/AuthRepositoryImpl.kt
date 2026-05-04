@@ -2,9 +2,7 @@ package com.example.nexusbank.feature.auth.data.repository
 
 import com.example.nexusbank.core.domain.util.Resource
 import com.example.nexusbank.core.network.api.AuthApiService
-import com.example.nexusbank.core.network.model.LoginRequest
-import com.example.nexusbank.core.network.model.SendOtpRequest
-import com.example.nexusbank.core.network.model.VerifyOtpRequest
+import com.example.nexusbank.core.network.model.*
 import com.example.nexusbank.core.network.util.NetworkResult
 import com.example.nexusbank.core.network.util.safeApiCall
 import com.example.nexusbank.core.security.EncryptedPrefs
@@ -18,30 +16,90 @@ class AuthRepositoryImpl @Inject constructor(
     private val encryptedPrefs: EncryptedPrefs
 ) : AuthRepository {
 
-    override suspend fun sendOtp(phone: String): Resource<String> {
-        return when (val result = safeApiCall { authApiService.sendOtp(SendOtpRequest(phone)) }) {
-            is NetworkResult.Success -> Resource.Success(result.data.otpRef)
-            is NetworkResult.Error -> Resource.Error(result.message, result.code)
-        }
-    }
-
-    override suspend fun verifyOtp(phone: String, otp: String, otpRef: String): Resource<String> {
-        return when (val result = safeApiCall { authApiService.verifyOtp(VerifyOtpRequest(phone, otp, otpRef)) }) {
-            is NetworkResult.Success -> Resource.Success(result.data.tempToken)
-            is NetworkResult.Error -> Resource.Error(result.message, result.code)
-        }
-    }
-
-    override suspend fun loginWithMpin(phone: String, mpin: String): Resource<Unit> {
-        val deviceId = encryptedPrefs.deviceId ?: ""
-        return when (val result = safeApiCall { authApiService.loginWithMpin(LoginRequest(phone, mpin, deviceId)) }) {
+    override suspend fun register(
+        phone: String,
+        fullName: String,
+        email: String,
+        dateOfBirth: String,
+        gender: String,
+        password: String,
+        mpin: String
+    ): Resource<RegisterResponseData> {
+        val request = RegisterRequest(phone, fullName, email, dateOfBirth, gender, password, mpin)
+        return when (val result = safeApiCall { authApiService.register(request) }) {
             is NetworkResult.Success -> {
-                encryptedPrefs.accessToken = result.data.accessToken
-                encryptedPrefs.refreshToken = result.data.refreshToken
-                Resource.Success(Unit)
+                val apiResponse = result.data
+                if (apiResponse.success && apiResponse.data != null) {
+                    Resource.Success(apiResponse.data)
+                } else {
+                    Resource.Error(apiResponse.message ?: "Registration failed")
+                }
+            }
+
+            is NetworkResult.Error -> Resource.Error(result.message, result.code)
+        } as Resource<RegisterResponseData>
+    }
+
+    override suspend fun login(
+        phone: String,
+        password: String,
+        mpin: String
+    ): Resource<LoginResponseData> {
+        val deviceId = encryptedPrefs.deviceId ?: "android-device"
+        val request = LoginRequest(
+            phone = phone,
+            password = password,
+            mpin = mpin,
+            deviceId = deviceId,
+            deviceName = android.os.Build.MODEL,
+            osVersion = "Android ${android.os.Build.VERSION.RELEASE}",
+            appVersion = "1.0.0"
+        )
+        return when (val result = safeApiCall { authApiService.login(request) }) {
+            is NetworkResult.Success -> {
+                val apiResponse = result.data
+                if (apiResponse.success && apiResponse.data != null) {
+                    val data = apiResponse.data
+                    encryptedPrefs.accessToken = data?.accessToken
+                    encryptedPrefs.refreshToken = data?.refreshToken
+                    encryptedPrefs.userId = data?.user?.id
+                    Resource.Success(data)
+                } else {
+                    Resource.Error(apiResponse.message ?: "Login failed")
+                }
+            }
+
+            is NetworkResult.Error -> Resource.Error(result.message, result.code)
+        } as Resource<LoginResponseData>
+    }
+
+    override suspend fun checkPhone(phone: String): Resource<Boolean> {
+        return when (val result = safeApiCall { authApiService.checkPhone(phone) }) {
+            is NetworkResult.Success -> {
+                val apiResponse = result.data
+                if (apiResponse.success && apiResponse.data != null) {
+                    Resource.Success(apiResponse.data!!.exists)
+                } else {
+                    Resource.Error(apiResponse.message ?: "Check failed")
+                }
             }
             is NetworkResult.Error -> Resource.Error(result.message, result.code)
         }
+    }
+
+    override suspend fun getMe(): Resource<MeResponseData> {
+        return when (val result = safeApiCall { authApiService.getMe() }) {
+            is NetworkResult.Success -> {
+                val apiResponse = result.data
+                if (apiResponse.success && apiResponse.data != null) {
+                    Resource.Success(apiResponse.data)
+                } else {
+                    Resource.Error(apiResponse.message ?: "Failed to fetch user")
+                }
+            }
+
+            is NetworkResult.Error -> Resource.Error(result.message, result.code)
+        } as Resource<MeResponseData>
     }
 
     override suspend fun logout(): Resource<Unit> {

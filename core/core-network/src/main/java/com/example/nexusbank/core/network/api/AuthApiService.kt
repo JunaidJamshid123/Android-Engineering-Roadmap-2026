@@ -6,18 +6,27 @@ import retrofit2.http.*
 
 interface AuthApiService {
 
-    @POST("auth/send-otp")
-    suspend fun sendOtp(@Body request: SendOtpRequest): Response<OtpResponse>
+    @POST("auth/register")
+    suspend fun register(@Body request: RegisterRequest): Response<ApiResponse<RegisterResponseData>>
 
-    @POST("auth/verify-otp")
-    suspend fun verifyOtp(@Body request: VerifyOtpRequest): Response<VerifyOtpResponse>
+    @POST("auth/login")
+    suspend fun login(@Body request: LoginRequest): Response<ApiResponse<LoginResponseData>>
 
-    @POST("auth/login-mpin")
-    suspend fun loginWithMpin(@Body request: LoginRequest): Response<AuthResponse>
+    @GET("auth/check-phone/{phone}")
+    suspend fun checkPhone(@Path("phone") phone: String): Response<ApiResponse<CheckPhoneData>>
 
-    @POST("auth/refresh-token")
-    suspend fun refreshToken(@Body request: RefreshTokenRequest): Response<AuthResponse>
+    @GET("auth/me")
+    suspend fun getMe(): Response<ApiResponse<MeResponseData>>
 
     @POST("auth/logout")
-    suspend fun logout(): Response<Unit>
+    suspend fun logout(): Response<ApiResponse<Unit>>
+
+    @POST("auth/send-otp")
+    suspend fun sendOtp(@Body request: SendOtpRequest): Response<ApiResponse<OtpResponse>>
+
+    @POST("auth/verify-otp")
+    suspend fun verifyOtp(@Body request: VerifyOtpRequest): Response<ApiResponse<VerifyOtpResponse>>
+
+    @POST("auth/refresh-token")
+    suspend fun refreshToken(@Body request: RefreshTokenRequest): Response<ApiResponse<AuthResponse>>
 }
