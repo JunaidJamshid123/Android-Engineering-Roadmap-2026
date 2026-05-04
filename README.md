@@ -10,6 +10,22 @@
 
 ---
 
+## 🏦 Nexus Bank — Complete Enterprise-Level Banking App
+
+This project includes a **fully functional, enterprise-grade banking system app** built with Jetpack Compose, Clean Architecture, Hilt DI, Retrofit, and Room. Explore real-world patterns in action — authentication, dashboards, navigation drawers, and more.
+
+<p align="center">
+  <img src="Banking%20App%20SS/Splash.png" width="130" />
+  <img src="Banking%20App%20SS/signup.png" width="130" />
+  <img src="Banking%20App%20SS/Login.png" width="130" />
+  <img src="Banking%20App%20SS/Home.png" width="130" />
+  <img src="Banking%20App%20SS/drawer.png" width="130" />
+  <img src="Banking%20App%20SS/more.png" width="130" />
+  <img src="Banking%20App%20SS/logout.png" width="130" />
+</p>
+
+---
+
 ## 📖 What Is This?
 
 This repository is a **complete Android engineering roadmap for 2026** — not just theory, but a real Android project packed with detailed guides, architecture diagrams, code samples, and practical implementations. Whether you're preparing for interviews, leveling up your skills, or onboarding onto Android development, this repo has you covered.
