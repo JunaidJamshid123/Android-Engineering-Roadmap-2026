@@ -20,6 +20,7 @@ data class DashboardUiState(
     val user: User? = null,
     val accounts: List<Account> = emptyList(),
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val error: String? = null
 )
 
@@ -62,5 +63,30 @@ class DashboardViewModel @Inject constructor(
 
     fun retry() {
         fetchUserProfile()
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true, error = null) }
+
+            when (val result = authRepository.getMe()) {
+                is Resource.Success -> {
+                    val meData = result.data
+                    if (meData != null) {
+                        val user = meData.toDomainUser()
+                        val accounts = meData.bankAccounts.map { it.toDomainAccount(meData.id) }
+                        _uiState.update {
+                            it.copy(user = user, accounts = accounts, isRefreshing = false)
+                        }
+                    } else {
+                        _uiState.update { it.copy(isRefreshing = false, error = "No data received") }
+                    }
+                }
+                is Resource.Error -> {
+                    _uiState.update { it.copy(isRefreshing = false, error = result.message) }
+                }
+                is Resource.Loading -> { /* handled by isRefreshing flag */ }
+            }
+        }
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import com.example.nexusbank.core.ui.components.LogoutConfirmationDialog
 import com.example.nexusbank.core.ui.theme.*
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun DashboardScreen(
@@ -55,8 +57,20 @@ fun DashboardScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var qrAccount by remember { mutableStateOf<com.example.nexusbank.core.domain.model.Account?>(null) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    // QR Code Dialog
+    val currentUser = uiState.user
+    val currentQrAccount = qrAccount
+    if (currentUser != null && currentQrAccount != null) {
+        AccountQrDialog(
+            user = currentUser,
+            account = currentQrAccount,
+            onDismiss = { qrAccount = null }
+        )
+    }
 
     if (showLogoutDialog) {
         LogoutConfirmationDialog(
@@ -129,8 +143,13 @@ fun DashboardScreen(
             )
         }
     ) {
+    PullToRefreshBox(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = { viewModel.refresh() },
+        modifier = modifier.fillMaxSize()
+    ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(BgGray)
     ) {
@@ -298,13 +317,15 @@ fun DashboardScreen(
                     contentDescription = "QR Code",
                     modifier = Modifier
                         .size(28.dp)
-                        .padding(top = 4.dp),
+                        .padding(top = 4.dp)
+                        .clickable { qrAccount = account },
                     tint = NexusGreen
                 )
             }
             HorizontalDivider(color = DividerDark)
         }
     }
+    } // PullToRefreshBox
     } // ModalNavigationDrawer
 }
 

@@ -1,5 +1,4 @@
 package com.example.nexusbank.feature.auth.ui
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nexusbank.core.domain.util.Resource
@@ -39,7 +38,10 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onPasswordChange(value: String) {
-        _uiState.update { it.copy(password = value, error = null) }
+        val sanitized = value.replace(Regex("[\\t\\n\\r]"), "")
+        if (sanitized.length <= 64) {
+            _uiState.update { it.copy(password = sanitized, error = null) }
+        }
     }
 
     fun onMpinChange(value: String) {
@@ -63,8 +65,16 @@ class LoginViewModel @Inject constructor(
             _uiState.update { it.copy(error = "Phone number is required") }
             return
         }
+        if (!state.phone.matches(Regex("^\\+?[0-9]{10,13}$"))) {
+            _uiState.update { it.copy(error = "Invalid phone number format") }
+            return
+        }
         if (state.password.isBlank()) {
             _uiState.update { it.copy(error = "Password is required") }
+            return
+        }
+        if (state.password.length < 8) {
+            _uiState.update { it.copy(error = "Password must be at least 8 characters") }
             return
         }
         if (state.mpin.isBlank() || state.mpin.length != 4) {

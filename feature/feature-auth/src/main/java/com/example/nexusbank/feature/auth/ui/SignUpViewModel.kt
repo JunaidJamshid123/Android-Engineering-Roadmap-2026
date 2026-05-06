@@ -37,7 +37,10 @@ class SignUpViewModel @Inject constructor(
     val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
 
     fun onFullNameChange(value: String) {
-        _uiState.update { it.copy(fullName = value, error = null) }
+        val sanitized = value.replace(Regex("[^a-zA-Z\\s'-]"), "")
+        if (sanitized.length <= 50) {
+            _uiState.update { it.copy(fullName = sanitized, error = null) }
+        }
     }
 
     fun onPhoneChange(value: String) {
@@ -48,7 +51,10 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onEmailChange(value: String) {
-        _uiState.update { it.copy(email = value, error = null) }
+        val sanitized = value.replace(Regex("[\\s<>\"';]"), "").lowercase()
+        if (sanitized.length <= 100) {
+            _uiState.update { it.copy(email = sanitized, error = null) }
+        }
     }
 
     fun onDateOfBirthChange(value: String) {
@@ -60,7 +66,10 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onPasswordChange(value: String) {
-        _uiState.update { it.copy(password = value, error = null) }
+        val sanitized = value.replace(Regex("[\\t\\n\\r]"), "")
+        if (sanitized.length <= 64) {
+            _uiState.update { it.copy(password = sanitized, error = null) }
+        }
     }
 
     fun onMpinChange(value: String) {
@@ -94,6 +103,14 @@ class SignUpViewModel @Inject constructor(
         }
         if (state.email.isBlank()) {
             _uiState.update { it.copy(error = "Email is required") }
+            return
+        }
+        if (!state.phone.matches(Regex("^\\+?[0-9]{10,13}$"))) {
+            _uiState.update { it.copy(error = "Invalid phone number format") }
+            return
+        }
+        if (!state.email.matches(Regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))) {
+            _uiState.update { it.copy(error = "Invalid email format") }
             return
         }
         if (state.dateOfBirth.isBlank()) {

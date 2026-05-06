@@ -1,11 +1,10 @@
 package com.example.nexusbank.feature.transfers.ui
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nexusbank.core.domain.model.Transaction
 import com.example.nexusbank.core.domain.util.Resource
-import com.example.nexusbank.feature.transfers.domain.usecase.GetRecentTransactionsUseCase
+import com.example.nexusbank.core.network.model.TransferHistoryItem
+import com.example.nexusbank.feature.transfers.domain.TransferRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,33 +14,40 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class TransactionsUiState(
-    val transactions: List<Transaction> = emptyList(),
     val isLoading: Boolean = false,
+    val items: List<TransferHistoryItem> = emptyList(),
+    val total: Int = 0,
     val error: String? = null
 )
 
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
-    private val getRecentTransactionsUseCase: GetRecentTransactionsUseCase,
-    savedStateHandle: SavedStateHandle
+    private val repository: TransferRepository
 ) : ViewModel() {
 
-    private val accountId: String = savedStateHandle["accountId"] ?: ""
+    private val _state = MutableStateFlow(TransactionsUiState())
+    val state: StateFlow<TransactionsUiState> = _state.asStateFlow()
 
-    private val _uiState = MutableStateFlow(TransactionsUiState())
-    val uiState: StateFlow<TransactionsUiState> = _uiState.asStateFlow()
+    init {
+        load()
+    }
 
-    init { if (accountId.isNotBlank()) loadTransactions() }
-
-    fun loadTransactions() {
+    fun load() {
+        _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
-            getRecentTransactionsUseCase(accountId).collect { result ->
-                when (result) {
-                    is Resource.Loading -> _uiState.update { it.copy(isLoading = true) }
-                    is Resource.Success -> _uiState.update { it.copy(isLoading = false, transactions = result.data) }
-                    is Resource.Error -> _uiState.update { it.copy(isLoading = false, error = result.message) }
+            when (val r = repository.getTransferHistory(limit = 50, offset = 0)) {
+                is Resource.Success -> _state.update {
+                    it.copy(isLoading = false, items = r.data.items, total = r.data.total)
                 }
+                is Resource.Error -> _state.update {
+                    it.copy(isLoading = false, error = r.message)
+                }
+                is Resource.Loading -> Unit
             }
         }
+    }
+
+    fun clearError() {
+        _state.update { it.copy(error = null) }
     }
 }

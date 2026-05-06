@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.nexusbank.core.ui.components.ErrorDialog
 import com.example.nexusbank.core.ui.theme.*
 
 @Composable
@@ -33,6 +34,13 @@ fun SignUpContent(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var genderExpanded by remember { mutableStateOf(false) }
+
+    if (uiState.error != null) {
+        ErrorDialog(
+            message = uiState.error!!,
+            onDismiss = viewModel::clearError
+        )
+    }
 
     LaunchedEffect(uiState.isSignUpSuccess) {
         if (uiState.isSignUpSuccess) onSignUpSuccess()
@@ -176,11 +184,11 @@ fun SignUpContent(
         imeAction = ImeAction.Done
     )
 
-    Spacer(modifier = Modifier.height(24.dp))
+    Spacer(modifier = Modifier.height(20.dp))
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
             checked = uiState.termsAccepted,
@@ -190,20 +198,23 @@ fun SignUpContent(
                 uncheckedColor = FieldLineColor
             )
         )
-        Column(modifier = Modifier.padding(top = 12.dp)) {
-            Text(text = "I agree to the ", fontSize = 13.sp, color = TextMedium)
+        Spacer(modifier = Modifier.width(4.dp))
+        Column {
             Row {
+                Text(text = "I agree to the ", fontSize = 12.sp, color = TextMedium)
                 Text(
                     text = "Terms & Conditions",
-                    fontSize = 13.sp,
+                    fontSize = 12.sp,
                     color = NexusGreen,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.clickable { }
                 )
-                Text(text = " and ", fontSize = 13.sp, color = TextMedium)
+            }
+            Row {
+                Text(text = "and ", fontSize = 12.sp, color = TextMedium)
                 Text(
                     text = "Privacy Policy",
-                    fontSize = 13.sp,
+                    fontSize = 12.sp,
                     color = NexusGreen,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.clickable { }
@@ -212,20 +223,18 @@ fun SignUpContent(
         }
     }
 
-    if (uiState.error != null) {
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = uiState.error!!, fontSize = 13.sp, color = Color.Red)
-    }
-
-    Spacer(modifier = Modifier.height(28.dp))
+    Spacer(modifier = Modifier.height(24.dp))
 
     Button(
         onClick = viewModel::onSignUpClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp),
-        shape = RoundedCornerShape(10.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = NexusGreen),
+            .height(52.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = NexusGreen,
+            disabledContainerColor = FieldLineColor
+        ),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
         enabled = uiState.termsAccepted && !uiState.isLoading
     ) {
@@ -240,21 +249,23 @@ fun SignUpContent(
                 text = "Create Account",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White
+                color = Color.White,
+                letterSpacing = 0.3.sp
             )
         }
     }
 
-    Spacer(modifier = Modifier.height(32.dp))
+    Spacer(modifier = Modifier.height(24.dp))
 }
 
 @Composable
 private fun SectionLabel(text: String) {
     Text(
-        text = text,
-        fontSize = 14.sp,
+        text = text.uppercase(),
+        fontSize = 11.sp,
         fontWeight = FontWeight.SemiBold,
-        color = NexusGreen
+        color = NexusGreen,
+        letterSpacing = 0.6.sp
     )
 }
 

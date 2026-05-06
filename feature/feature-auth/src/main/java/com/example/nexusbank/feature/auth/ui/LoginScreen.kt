@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.nexusbank.core.ui.components.ErrorDialog
 import com.example.nexusbank.core.ui.theme.*
 
 @Composable
@@ -43,6 +44,13 @@ fun LoginScreen(
     val uiState by viewModel.uiState.collectAsState()
     var selectedTab by remember { mutableIntStateOf(0) }
 
+    if (uiState.error != null) {
+        ErrorDialog(
+            message = uiState.error!!,
+            onDismiss = viewModel::clearError
+        )
+    }
+
     LaunchedEffect(uiState.isLoginSuccess) {
         if (uiState.isLoginSuccess) onLoginSuccess()
     }
@@ -52,8 +60,9 @@ fun LoginScreen(
             .fillMaxSize()
             .background(BgGray)
             .statusBarsPadding()
+            .imePadding()
     ) {
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -63,20 +72,22 @@ fun LoginScreen(
             Image(
                 painter = painterResource(id = com.example.nexusbank.core.ui.R.drawable.nexus_app_icon),
                 contentDescription = "Nexus Bank",
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(56.dp)
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
             Text(
                 text = "Nexus Bank",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = NexusGreen
+                color = NexusGreen,
+                letterSpacing = 0.3.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = if (selectedTab == 0) "Welcome back" else "Create your account",
-                fontSize = 14.sp,
-                color = TextLight
+                fontSize = 13.sp,
+                color = TextLight,
+                letterSpacing = 0.2.sp
             )
         }
 
@@ -102,13 +113,14 @@ fun LoginScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
+                .padding(bottom = 24.dp)
         ) {
             if (selectedTab == 0) {
                 LoginTabContent(
@@ -125,7 +137,7 @@ fun LoginScreen(
                     onForgotPasswordClick = onForgotPasswordClick,
                     onLoginClick = viewModel::onLoginClick,
                     isLoading = uiState.isLoading,
-                    error = uiState.error
+                    error = null
                 )
             } else {
                 SignUpContent(onSignUpSuccess = onSignUpClick)
@@ -225,7 +237,7 @@ private fun LoginTabContent(
         Text(text = error, fontSize = 13.sp, color = Color.Red)
     }
 
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(20.dp))
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -233,29 +245,32 @@ private fun LoginTabContent(
     ) {
         Text(
             text = "Forgot MPIN?",
-            fontSize = 13.sp,
+            fontSize = 12.sp,
             color = NexusGreen,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.clickable { onForgotPasswordClick() }
         )
         Text(
             text = "Forgot Password?",
-            fontSize = 13.sp,
+            fontSize = 12.sp,
             color = NexusGreen,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.clickable { onForgotPasswordClick() }
         )
     }
 
-    Spacer(modifier = Modifier.height(36.dp))
+    Spacer(modifier = Modifier.height(32.dp))
 
     Button(
         onClick = onLoginClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp),
-        shape = RoundedCornerShape(10.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = NexusGreen),
+            .height(52.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = NexusGreen,
+            disabledContainerColor = FieldLineColor
+        ),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
         enabled = !isLoading
     ) {
@@ -270,12 +285,13 @@ private fun LoginTabContent(
                 text = "Login",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White
+                color = Color.White,
+                letterSpacing = 0.3.sp
             )
         }
     }
 
-    Spacer(modifier = Modifier.height(32.dp))
+    Spacer(modifier = Modifier.height(24.dp))
 }
 
 @Composable

@@ -3,6 +3,7 @@ package com.example.nexusbank.core.network.di
 import com.example.nexusbank.core.network.BuildConfig
 import com.example.nexusbank.core.network.api.AuthApiService
 import com.example.nexusbank.core.network.api.NexusBankApiService
+import com.example.nexusbank.core.network.api.TransferApiService
 import com.example.nexusbank.core.network.interceptor.AuthInterceptor
 import com.example.nexusbank.core.network.interceptor.TokenAuthenticator
 import com.example.nexusbank.core.network.util.SSLPinningConfig
@@ -109,5 +110,11 @@ object NetworkModule {
         retrofit: Retrofit
     ): AuthApiService {
         return retrofit.create(AuthApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransferApiService(retrofit: Retrofit): TransferApiService {
+        return retrofit.create(TransferApiService::class.java)
     }
 }

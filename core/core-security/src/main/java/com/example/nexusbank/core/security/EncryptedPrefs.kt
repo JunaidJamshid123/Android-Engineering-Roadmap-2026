@@ -93,8 +93,19 @@ class EncryptedPrefs @Inject constructor(
         return accessToken != null && refreshToken != null
     }
 
+    fun isSessionExpired(timeoutMillis: Long = SESSION_TIMEOUT_MS): Boolean {
+        val lastActive = lastActiveTimestamp
+        if (lastActive == 0L) return false
+        return System.currentTimeMillis() - lastActive > timeoutMillis
+    }
+
+    fun updateLastActive() {
+        lastActiveTimestamp = System.currentTimeMillis()
+    }
+
     companion object {
         private const val PREFS_FILE_NAME = "nexus_secure_prefs"
+        const val SESSION_TIMEOUT_MS = 5 * 60 * 1000L // 5 minutes
 
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
