@@ -11,9 +11,9 @@ import com.example.nexusbank.feature.auth.ui.LoginScreen
 import com.example.nexusbank.feature.dashboard.ui.DashboardScreen
 import com.example.nexusbank.feature.dashboard.ui.MoreOptionsScreen
 import com.example.nexusbank.feature.onboarding.ui.SplashScreen
+import com.example.nexusbank.feature.transactions.ui.TransactionsScreen
 import com.example.nexusbank.feature.transfers.ui.ConfirmTransferScreen
 import com.example.nexusbank.feature.transfers.ui.NewTransferScreen
-import com.example.nexusbank.feature.transfers.ui.TransactionsScreen
 import com.example.nexusbank.feature.transfers.ui.TransferSuccessScreen
 
 @Composable

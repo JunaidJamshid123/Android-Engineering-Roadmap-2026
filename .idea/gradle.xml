@@ -38,6 +38,8 @@
             <option value="$PROJECT_DIR$/feature/feature-auth" />
             <option value="$PROJECT_DIR$/feature/feature-dashboard" />
             <option value="$PROJECT_DIR$/feature/feature-onboarding" />
+            <option value="$PROJECT_DIR$/feature/feature-transactions" />
+            <option value="$PROJECT_DIR$/feature/feature-transfers" />
           </set>
         </option>
       </GradleProjectSettings>

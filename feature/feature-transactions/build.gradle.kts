@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.nexusbank.feature.transfers"
+    namespace = "com.example.nexusbank.feature.transactions"
     compileSdk = 36
 
     defaultConfig {

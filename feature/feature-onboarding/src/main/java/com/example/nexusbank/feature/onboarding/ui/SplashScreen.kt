@@ -75,6 +75,23 @@ fun SplashScreen(
         val logoIcon = if (isCompact) 76.dp else 96.dp
         val titleSize = if (isCompact) 24.sp else 28.sp
         val taglineSize = if (isCompact) 13.sp else 14.sp
+        val ringSize = logoBox + 36.dp
+
+        // Soft radial glow behind the logo
+        Box(
+            modifier = Modifier
+                .size(ringSize + 80.dp)
+                .alpha(alpha.value * 0.55f)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.18f),
+                            Color.Transparent
+                        )
+                    ),
+                    shape = CircleShape
+                )
+        )
 
         Column(
             modifier = Modifier
@@ -85,23 +102,39 @@ fun SplashScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(logoBox)
+                    .size(ringSize)
                     .scale(scale.value)
-                    .alpha(alpha.value)
-                    .shadow(elevation = 12.dp, shape = CircleShape, clip = false)
-                    .clip(CircleShape)
-                    .background(Color.White)
-                    .border(
-                        BorderStroke(1.dp, Color.White.copy(alpha = 0.25f)),
-                        CircleShape
-                    ),
+                    .alpha(alpha.value),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = com.example.nexusbank.core.ui.R.drawable.nexus_app_icon),
-                    contentDescription = "Nexus Bank",
-                    modifier = Modifier.size(logoIcon)
+                // Outer accent ring
+                Box(
+                    modifier = Modifier
+                        .size(ringSize)
+                        .clip(CircleShape)
+                        .border(
+                            BorderStroke(1.dp, Color.White.copy(alpha = 0.22f)),
+                            CircleShape
+                        )
                 )
+                Box(
+                    modifier = Modifier
+                        .size(logoBox)
+                        .shadow(elevation = 16.dp, shape = CircleShape, clip = false)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .border(
+                            BorderStroke(1.dp, Color.White.copy(alpha = 0.25f)),
+                            CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = com.example.nexusbank.core.ui.R.drawable.nexus_app_icon),
+                        contentDescription = "Nexus Bank",
+                        modifier = Modifier.size(logoIcon)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(28.dp))

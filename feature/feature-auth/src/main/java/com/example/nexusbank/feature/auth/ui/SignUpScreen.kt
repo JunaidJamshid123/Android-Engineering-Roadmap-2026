@@ -1,7 +1,11 @@
 package com.example.nexusbank.feature.auth.ui
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -285,6 +289,22 @@ private fun SignUpIconField(
     val visualTransformation = if (isPassword && !passwordVisible)
         PasswordVisualTransformation() else VisualTransformation.None
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    val underlineColor by animateColorAsState(
+        targetValue = if (isFocused) NexusGreen else FieldLineColor,
+        label = "underlineColor"
+    )
+    val underlineHeight by animateDpAsState(
+        targetValue = if (isFocused) 1.5.dp else 1.dp,
+        label = "underlineHeight"
+    )
+    val iconTint by animateColorAsState(
+        targetValue = if (isFocused) NexusGreen else TextLight,
+        label = "iconTint"
+    )
+
     Column {
         Text(
             text = label,
@@ -301,18 +321,19 @@ private fun SignUpIconField(
             cursorBrush = SolidColor(NexusGreen),
             visualTransformation = visualTransformation,
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+            interactionSource = interactionSource,
             decorationBox = { innerTextField ->
                 Column {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 10.dp),
+                            .padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
-                            tint = TextLight,
+                            tint = iconTint,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.size(12.dp))
@@ -328,7 +349,7 @@ private fun SignUpIconField(
                                     imageVector = if (passwordVisible) Icons.Default.Visibility
                                     else Icons.Default.VisibilityOff,
                                     contentDescription = null,
-                                    tint = TextLight,
+                                    tint = iconTint,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -337,8 +358,8 @@ private fun SignUpIconField(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(1.dp)
-                            .background(FieldLineColor)
+                            .height(underlineHeight)
+                            .background(underlineColor)
                     )
                 }
             },

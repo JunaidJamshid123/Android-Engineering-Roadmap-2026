@@ -1,9 +1,12 @@
 package com.example.nexusbank.feature.auth.ui
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,8 +14,11 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pin
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +27,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -69,11 +76,18 @@ fun LoginScreen(
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = com.example.nexusbank.core.ui.R.drawable.nexus_app_icon),
-                contentDescription = "Nexus Bank",
-                modifier = Modifier.size(56.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .background(NexusGreenLight, shape = RoundedCornerShape(20.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = com.example.nexusbank.core.ui.R.drawable.nexus_app_icon),
+                    contentDescription = "Nexus Bank",
+                    modifier = Modifier.size(44.dp)
+                )
+            }
             Spacer(modifier = Modifier.height(14.dp))
             Text(
                 text = "Nexus Bank",
@@ -82,9 +96,9 @@ fun LoginScreen(
                 color = NexusGreen,
                 letterSpacing = 0.3.sp
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = if (selectedTab == 0) "Welcome back" else "Create your account",
+                text = if (selectedTab == 0) "Welcome back, please sign in" else "Create your account",
                 fontSize = 13.sp,
                 color = TextLight,
                 letterSpacing = 0.2.sp
@@ -202,29 +216,32 @@ private fun LoginTabContent(
         value = phone,
         onValueChange = onPhoneChange,
         placeholder = "+92 3XX XXXXXXX",
+        leadingIcon = Icons.Outlined.Phone,
         keyboardType = KeyboardType.Phone,
         imeAction = ImeAction.Next
     )
-    Spacer(modifier = Modifier.height(28.dp))
+    Spacer(modifier = Modifier.height(24.dp))
 
     FieldLabel("Password")
     UnderlineTextField(
         value = password,
         onValueChange = onPasswordChange,
         placeholder = "Enter your password",
+        leadingIcon = Icons.Outlined.Lock,
         isPassword = true,
         passwordVisible = passwordVisible,
         onTogglePassword = onTogglePassword,
         keyboardType = KeyboardType.Password,
         imeAction = ImeAction.Next
     )
-    Spacer(modifier = Modifier.height(28.dp))
+    Spacer(modifier = Modifier.height(24.dp))
 
     FieldLabel("MPIN")
     UnderlineTextField(
         value = mpin,
         onValueChange = onMpinChange,
         placeholder = "4-digit MPIN",
+        leadingIcon = Icons.Default.Pin,
         isPassword = true,
         passwordVisible = mpinVisible,
         onTogglePassword = onToggleMpin,
@@ -310,6 +327,7 @@ internal fun UnderlineTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
+    leadingIcon: ImageVector? = null,
     isPassword: Boolean = false,
     passwordVisible: Boolean = false,
     onTogglePassword: (() -> Unit)? = null,
@@ -319,6 +337,22 @@ internal fun UnderlineTextField(
     val visualTransformation = if (isPassword && !passwordVisible)
         PasswordVisualTransformation() else VisualTransformation.None
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    val underlineColor by animateColorAsState(
+        targetValue = if (isFocused) NexusGreen else FieldLineColor,
+        label = "underlineColor"
+    )
+    val underlineHeight by animateDpAsState(
+        targetValue = if (isFocused) 1.5.dp else 1.dp,
+        label = "underlineHeight"
+    )
+    val iconTint by animateColorAsState(
+        targetValue = if (isFocused) NexusGreen else TextLight,
+        label = "iconTint"
+    )
+
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
@@ -327,14 +361,24 @@ internal fun UnderlineTextField(
         cursorBrush = SolidColor(NexusGreen),
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+        interactionSource = interactionSource,
         decorationBox = { innerTextField ->
             Column {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 10.dp),
+                        .padding(vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    if (leadingIcon != null) {
+                        Icon(
+                            imageVector = leadingIcon,
+                            contentDescription = null,
+                            tint = iconTint,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                    }
                     Box(modifier = Modifier.weight(1f)) {
                         if (value.isEmpty()) {
                             Text(text = placeholder, fontSize = 15.sp, color = TextLight)
@@ -347,7 +391,7 @@ internal fun UnderlineTextField(
                                 imageVector = if (passwordVisible) Icons.Default.Visibility
                                 else Icons.Default.VisibilityOff,
                                 contentDescription = null,
-                                tint = TextLight,
+                                tint = iconTint,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -356,8 +400,8 @@ internal fun UnderlineTextField(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(1.dp)
-                        .background(FieldLineColor)
+                        .height(underlineHeight)
+                        .background(underlineColor)
                 )
             }
         },

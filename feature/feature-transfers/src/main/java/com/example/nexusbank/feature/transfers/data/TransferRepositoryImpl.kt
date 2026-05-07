@@ -6,7 +6,6 @@ import com.example.nexusbank.core.network.api.TransferApiService
 import com.example.nexusbank.core.network.model.BankAccountDto
 import com.example.nexusbank.core.network.model.ResolveRecipientData
 import com.example.nexusbank.core.network.model.ResolveRecipientRequest
-import com.example.nexusbank.core.network.model.TransferHistoryData
 import com.example.nexusbank.core.network.model.TransferRequest
 import com.example.nexusbank.core.network.model.TransferResponseData
 import com.example.nexusbank.core.network.util.NetworkResult
@@ -72,20 +71,6 @@ class TransferRepositoryImpl @Inject constructor(
                     Resource.Success(body.data!!)
                 } else {
                     Resource.Error(body.message ?: "Transfer failed")
-                }
-            }
-            is NetworkResult.Error -> Resource.Error(result.message, result.code)
-        }
-    }
-
-    override suspend fun getTransferHistory(limit: Int, offset: Int): Resource<TransferHistoryData> {
-        return when (val result = safeApiCall { api.getTransferHistory(limit, offset) }) {
-            is NetworkResult.Success -> {
-                val body = result.data
-                if (body.success && body.data != null) {
-                    Resource.Success(body.data!!)
-                } else {
-                    Resource.Error(body.message ?: "Could not load transactions")
                 }
             }
             is NetworkResult.Error -> Resource.Error(result.message, result.code)

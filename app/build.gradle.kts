@@ -58,6 +58,7 @@ dependencies {
     implementation(project(":feature:feature-onboarding"))
     implementation(project(":feature:feature-dashboard"))
     implementation(project(":feature:feature-transfers"))
+    implementation(project(":feature:feature-transactions"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -1,4 +1,4 @@
-package com.example.nexusbank.feature.transfers.ui
+package com.example.nexusbank.feature.transactions.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.SwapHoriz
@@ -28,6 +29,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen(
     onBackClick: () -> Unit = {},
@@ -44,7 +46,31 @@ fun TransactionsScreen(
 
     Scaffold(
         containerColor = BgGray,
-        topBar = { TransfersTopBar(title = "Transactions", onBackClick = onBackClick) }
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Transactions",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = TextDark
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = TextDark
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = TextDark
+                )
+            )
+        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -65,25 +91,7 @@ fun TransactionsScreen(
                     }
                 }
                 state.items.isEmpty() && state.error == null -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                imageVector = Icons.Default.SwapHoriz,
-                                contentDescription = null,
-                                tint = TextLight,
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                text = "No transactions yet",
-                                fontSize = 14.sp,
-                                color = TextLight
-                            )
-                        }
-                    }
+                    EmptyState()
                 }
                 else -> {
                     val grouped = remember(state.items) {
@@ -122,6 +130,29 @@ fun TransactionsScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun EmptyState() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                imageVector = Icons.Default.SwapHoriz,
+                contentDescription = null,
+                tint = TextLight,
+                modifier = Modifier.size(48.dp)
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "No transactions yet",
+                fontSize = 14.sp,
+                color = TextLight
+            )
         }
     }
 }
@@ -185,7 +216,7 @@ private fun TransactionRow(txn: TransferHistoryItem) {
             if (!txn.remarks.isNullOrBlank()) {
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = "“${txn.remarks}”",
+                    text = "\u201C${txn.remarks}\u201D",
                     fontSize = 11.sp,
                     color = TextLight,
                     maxLines = 1
@@ -225,7 +256,7 @@ private fun parseIso(value: String?): Long? {
 }
 
 private fun formatGroupDate(value: String?): String {
-    val ts = parseIso(value) ?: return "—"
+    val ts = parseIso(value) ?: return "\u2014"
     val fmt = SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault())
     return fmt.format(java.util.Date(ts))
 }
