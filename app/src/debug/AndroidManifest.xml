@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      Debug-only override: re-enables cleartext globally so the dev backend
+      (http://10.0.2.2:5000) is reachable. The release manifest keeps
+      android:usesCleartextTraffic="false".
+    -->
+    <application
+        android:usesCleartextTraffic="true"
+        tools:replace="android:usesCleartextTraffic" />
+</manifest>

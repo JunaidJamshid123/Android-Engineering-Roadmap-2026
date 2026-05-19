@@ -10,17 +10,32 @@ import com.example.nexusbank.core.network.model.MeResponseData
 fun MeResponseData.toDomainUser(): User {
     return User(
         id = id,
+        userId = id,
         fullName = fullName,
-        email = email ?: "",
         phone = phone,
-        avatarUrl = avatarUrl,
+        email = email ?: "",
+        dateOfBirth = dateOfBirth,
+        gender = gender,
         kycStatus = when (kycStatus?.uppercase()) {
             "VERIFIED" -> KycStatus.VERIFIED
             "PENDING" -> KycStatus.PENDING
             "REJECTED" -> KycStatus.REJECTED
             else -> KycStatus.NOT_STARTED
         },
-        createdAt = 0L
+        fatherName = null,
+        cnic = null,
+        maritalStatus = null,
+        nationality = null,
+        occupation = null,
+        monthlyIncome = null,
+        addressLine = null,
+        city = null,
+        country = null,
+        emergencyContactName = null,
+        emergencyContactPhone = null,
+        profilePictureUrl = avatarUrl,
+        createdAt = createdAt,
+        updatedAt = updatedAt
     )
 }
 

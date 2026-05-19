@@ -1,54 +1,47 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    id("nexusbank.android.library")
+    id("nexusbank.android.hilt")
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "com.example.nexusbank.core.network"
-    compileSdk = 36
 
     defaultConfig {
-        minSdk = 24
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Fallback only — actual values come from buildTypes below.
+        buildConfigField("String", "BASE_URL", "\"https://api.nexusbank.com/api/\"")
+    }
 
-        buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5000/api/\"")
+    buildTypes {
+        debug {
+            // Android emulator loopback → host machine's localhost.
+            // Cleartext is permitted for this host via network_security_config.
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5000/api/\"")
+        }
+        release {
+            // Production API. HTTPS-only; cert pinning enforced by OkHttp.
+            buildConfigField("String", "BASE_URL", "\"https://api.nexusbank.com/api/\"")
+        }
     }
 
     buildFeatures {
         buildConfig = true
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
     }
 }
 
 dependencies {
     implementation(project(":core:core-common"))
 
-    // Networking
     api(libs.retrofit)
     implementation(libs.retrofit.serialization)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.serialization.json)
 
-    // Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-
-    // Coroutines
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
-
     implementation(libs.androidx.core.ktx)
+
     testImplementation(libs.junit)
     testImplementation(libs.okhttp.mockwebserver)
 }

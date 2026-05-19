@@ -15,7 +15,7 @@ import com.example.nexusbank.core.database.entity.*
         LoanEntity::class,
         NotificationEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 abstract class NexusBankDatabase : RoomDatabase() {

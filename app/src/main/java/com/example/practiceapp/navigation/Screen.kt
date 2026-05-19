@@ -5,8 +5,17 @@ sealed class Screen(val route: String) {
     data object Login : Screen("login")
     data object Dashboard : Screen("dashboard")
     data object MoreOptions : Screen("more_options")
+    data object Profile : Screen("profile")
+    data object PersonalInfo : Screen("profile/personal")
+    data object ContactInfo : Screen("profile/contact")
+    data object EditProfile : Screen("profile/edit")
+    data object Security : Screen("profile/security")
+    data object AppPreferences : Screen("profile/preferences")
+    data object HelpSupport : Screen("profile/help")
+    data object About : Screen("profile/about")
 
     data object Transactions : Screen("transactions")
+    data object Statement : Screen("statement")
 
     data object NewTransfer : Screen("new_transfer")
 

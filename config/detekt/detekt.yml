@@ -1,0 +1,159 @@
+# Detekt configuration for NexusBank.
+#
+# Generated as a starting point; tweak rules per-module by overriding values
+# here. Run `./gradlew detektGenerateConfig` to regenerate the full default
+# config with all available options. Run `./gradlew detektBaseline` once to
+# capture existing violations into baseline.xml so they don't block the
+# build while you fix them gradually.
+
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+config:
+  validation: true
+  warningsAsErrors: false
+  checkExhaustiveness: false
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+
+output-reports:
+  active: true
+
+complexity:
+  active: true
+  LongMethod:
+    active: true
+    threshold: 80
+  LongParameterList:
+    active: true
+    functionThreshold: 8
+    constructorThreshold: 10
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 30
+    thresholdInClasses: 25
+    thresholdInInterfaces: 20
+    thresholdInObjects: 20
+    thresholdInEnums: 20
+    ignoreDeprecated: true
+    ignoreOverridden: true
+    ignorePrivate: true
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 18
+  ComplexCondition:
+    active: true
+    threshold: 5
+
+empty-blocks:
+  active: true
+  EmptyFunctionBlock:
+    active: true
+    ignoreOverridden: true
+
+exceptions:
+  active: true
+  TooGenericExceptionCaught:
+    active: false # We catch Throwable intentionally in error mappers
+  SwallowedException:
+    active: true
+    ignoredExceptionTypes:
+      - InterruptedException
+      - NumberFormatException
+      - ParseException
+      - MalformedURLException
+  ThrowingExceptionsWithoutMessageOrCause:
+    active: true
+
+naming:
+  active: true
+  FunctionNaming:
+    active: true
+    functionPattern: '[a-z][a-zA-Z0-9]*'
+    ignoreAnnotated: ['Composable'] # Composables use PascalCase
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: '[A-Z][_A-Z0-9]*'
+  ClassNaming:
+    active: true
+    classPattern: '[A-Z][a-zA-Z0-9]*'
+
+performance:
+  active: true
+  SpreadOperator:
+    active: false # Acceptable for Compose/varargs forwarding
+  ArrayPrimitive:
+    active: true
+
+potential-bugs:
+  active: true
+  EqualsAlwaysReturnsTrueOrFalse:
+    active: true
+  ImplicitDefaultLocale:
+    active: true
+  UnsafeCallOnNullableType:
+    active: true
+  UnreachableCode:
+    active: true
+
+style:
+  active: true
+  MagicNumber:
+    active: true
+    ignoreNumbers: ['-1', '0', '1', '2', '100', '1000']
+    ignoreHashCodeFunction: true
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreAnnotation: true
+    ignoreNamedArgument: true
+    ignoreEnums: true
+    ignoreRanges: true
+  MaxLineLength:
+    active: true
+    maxLineLength: 140
+    excludePackageStatements: true
+    excludeImportStatements: true
+  ReturnCount:
+    active: true
+    max: 4
+  WildcardImport:
+    active: true
+    excludeImports:
+      - 'java.util.*'
+  UnusedPrivateMember:
+    active: true
+    ignoreAnnotated: ['Preview']
+  ForbiddenComment:
+    active: true
+    comments:
+      - reason: 'Forbidden TODO marker — file a ticket and link it.'
+        value: 'FIXME:'
+      - reason: 'Forbidden TODO marker — file a ticket and link it.'
+        value: 'STOPSHIP:'
+  NewLineAtEndOfFile:
+    active: true
+
+# ---- ktlint rules pulled in via detekt-formatting ----------------------
+formatting:
+  active: true
+  android: true
+  autoCorrect: true
+  MaximumLineLength:
+    active: true
+    maxLineLength: 140
+  Indentation:
+    active: true
+    indentSize: 4
+  Filename:
+    active: true
+  PackageName:
+    active: true
+  Wrapping:
+    active: true
+  FinalNewline:
+    active: true

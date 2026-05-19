@@ -2,7 +2,6 @@ package com.example.nexusbank.core.network.interceptor
 
 import com.example.nexusbank.core.network.api.AuthApiService
 import com.example.nexusbank.core.network.model.RefreshTokenRequest
-import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
@@ -43,12 +42,13 @@ class TokenAuthenticator @Inject constructor(
                     .build()
             }
 
-            // Attempt to refresh (runBlocking is acceptable here — OkHttp calls authenticate() on a background thread)
+            // Attempt to refresh synchronously. OkHttp invokes `authenticate()`
+            // on a background thread and cannot suspend, so we use Retrofit's
+            // blocking `Call.execute()` instead of `runBlocking`.
             return try {
-                val refreshResponse = runBlocking {
-                    authApiServiceProvider.get()
-                        .refreshToken(RefreshTokenRequest(refreshToken))
-                }
+                val refreshResponse = authApiServiceProvider.get()
+                    .refreshTokenSync(RefreshTokenRequest(refreshToken))
+                    .execute()
 
                 if (refreshResponse.isSuccessful) {
                     val apiResponse = refreshResponse.body()

@@ -11,6 +11,15 @@ import com.example.nexusbank.feature.auth.ui.LoginScreen
 import com.example.nexusbank.feature.dashboard.ui.DashboardScreen
 import com.example.nexusbank.feature.dashboard.ui.MoreOptionsScreen
 import com.example.nexusbank.feature.onboarding.ui.SplashScreen
+import com.example.nexusbank.feature.about.ui.AboutScreen
+import com.example.nexusbank.feature.profile.ui.AppPreferencesScreen
+import com.example.nexusbank.feature.profile.ui.ContactInfoScreen
+import com.example.nexusbank.feature.profile.ui.EditProfileScreen
+import com.example.nexusbank.feature.profile.ui.HelpSupportScreen
+import com.example.nexusbank.feature.profile.ui.PersonalInfoScreen
+import com.example.nexusbank.feature.profile.ui.ProfileScreen
+import com.example.nexusbank.feature.profile.ui.SecurityScreen
+import com.example.nexusbank.feature.statement.ui.StatementScreen
 import com.example.nexusbank.feature.transactions.ui.TransactionsScreen
 import com.example.nexusbank.feature.transfers.ui.ConfirmTransferScreen
 import com.example.nexusbank.feature.transfers.ui.NewTransferScreen
@@ -67,15 +76,17 @@ fun NexusBankNavHost(
                     navController.navigate(Screen.MoreOptions.route)
                 },
                 onAccountClick = { },
-                onDrawerProfileClick = { },
-                onDrawerStatementsClick = { },
+                onDrawerProfileClick = {
+                    navController.navigate(Screen.Profile.route)
+                },
+                onDrawerStatementsClick = { navController.navigate(Screen.Statement.route) },
                 onDrawerTransactionsClick = { },
                 onDrawerBeneficiariesClick = { },
                 onDrawerVerificationClick = { },
                 onDrawerNotificationsClick = { },
                 onDrawerSecurityClick = { },
                 onDrawerHelpClick = { },
-                onDrawerAboutClick = { }
+                onDrawerAboutClick = { navController.navigate(Screen.About.route) }
             )
         }
 
@@ -85,10 +96,72 @@ fun NexusBankNavHost(
                 onOptionClick = { key ->
                     when (key) {
                         "transactions" -> navController.navigate(Screen.Transactions.route)
+                        "statements" -> navController.navigate(Screen.Statement.route)
+                        "profile" -> navController.navigate(Screen.Profile.route)
+                        "security" -> navController.navigate(Screen.Security.route)
+                        "help" -> navController.navigate(Screen.HelpSupport.route)
+                        "about" -> navController.navigate(Screen.About.route)
                         else -> { /* TODO */ }
                     }
                 }
             )
+        }
+
+        composable(Screen.Profile.route) {
+            ProfileScreen(
+                onBackClick = { navController.popBackStack() },
+                onPersonalInfoClick = { navController.navigate(Screen.PersonalInfo.route) },
+                onContactInfoClick = { navController.navigate(Screen.ContactInfo.route) },
+                onSecurityClick = { navController.navigate(Screen.Security.route) },
+                onPreferencesClick = { navController.navigate(Screen.AppPreferences.route) },
+                onHelpClick = { navController.navigate(Screen.HelpSupport.route) },
+                onLogoutClick = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Dashboard.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.PersonalInfo.route) {
+            PersonalInfoScreen(
+                onBackClick = { navController.popBackStack() },
+                onEditClick = { navController.navigate(Screen.EditProfile.route) }
+            )
+        }
+
+        composable(Screen.ContactInfo.route) {
+            ContactInfoScreen(
+                onBackClick = { navController.popBackStack() },
+                onEditClick = { navController.navigate(Screen.EditProfile.route) }
+            )
+        }
+
+        composable(Screen.EditProfile.route) {
+            EditProfileScreen(
+                onBackClick = { navController.popBackStack() },
+                onUpdateSuccess = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.Security.route) {
+            SecurityScreen(onBackClick = { navController.popBackStack() })
+        }
+
+        composable(Screen.AppPreferences.route) {
+            AppPreferencesScreen(onBackClick = { navController.popBackStack() })
+        }
+
+        composable(Screen.HelpSupport.route) {
+            HelpSupportScreen(onBackClick = { navController.popBackStack() })
+        }
+
+        composable(Screen.About.route) {
+            AboutScreen(onBackClick = { navController.popBackStack() })
+        }
+
+        composable(Screen.Statement.route) {
+            StatementScreen(onBackClick = { navController.popBackStack() })
         }
 
         composable(Screen.Transactions.route) {

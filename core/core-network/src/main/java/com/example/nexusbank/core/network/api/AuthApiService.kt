@@ -1,6 +1,7 @@
 package com.example.nexusbank.core.network.api
 
 import com.example.nexusbank.core.network.model.*
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -15,12 +16,6 @@ interface AuthApiService {
     @GET("auth/check-phone/{phone}")
     suspend fun checkPhone(@Path("phone") phone: String): Response<ApiResponse<CheckPhoneData>>
 
-    @GET("auth/me")
-    suspend fun getMe(): Response<ApiResponse<MeResponseData>>
-
-    @POST("auth/logout")
-    suspend fun logout(): Response<ApiResponse<Unit>>
-
     @POST("auth/send-otp")
     suspend fun sendOtp(@Body request: SendOtpRequest): Response<ApiResponse<OtpResponse>>
 
@@ -29,4 +24,12 @@ interface AuthApiService {
 
     @POST("auth/refresh-token")
     suspend fun refreshToken(@Body request: RefreshTokenRequest): Response<ApiResponse<AuthResponse>>
+
+    /**
+     * Synchronous variant of [refreshToken] used by `TokenAuthenticator`,
+     * which runs on OkHttp's blocking dispatcher thread and cannot suspend.
+     * Call `.execute()` on the returned [Call] — do NOT use `runBlocking`.
+     */
+    @POST("auth/refresh-token")
+    fun refreshTokenSync(@Body request: RefreshTokenRequest): Call<ApiResponse<AuthResponse>>
 }

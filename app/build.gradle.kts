@@ -1,45 +1,37 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
+    id("nexusbank.android.application")
+    id("nexusbank.android.application.compose")
+    id("nexusbank.android.hilt")
+    alias(libs.plugins.androidx.baselineprofile)
 }
 
 android {
     namespace = "com.example.practiceapp"
-    compileSdk {
-        version = release(36)
-    }
 
     defaultConfig {
         applicationId = "com.example.practiceapp"
-        minSdk = 24
-        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+    }
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            isDebuggable = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // A non-debuggable build type is required for the baseline-profile
+            // plugin to generate the `release` benchmark variant.
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-    buildFeatures {
-        compose = true
     }
 }
 
@@ -59,25 +51,28 @@ dependencies {
     implementation(project(":feature:feature-dashboard"))
     implementation(project(":feature:feature-transfers"))
     implementation(project(":feature:feature-transactions"))
+    implementation(project(":feature:feature-profile"))
+    implementation(project(":feature:feature-about"))
+    implementation(project(":feature:feature-statement"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.navigation.compose)
+
+    // Installs the precompiled baseline profile produced by :baselineprofile
+    // into the APK on first launch — significant startup win on cold start.
+    implementation(libs.androidx.profileinstaller)
+
+    // Memory-leak detection (debug builds only — never shipped to release).
+    debugImplementation(libs.leakcanary.android)
+
+    // Wires the consumer side of the baseline-profile plugin.
+    "baselineProfile"(project(":baselineprofile"))
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

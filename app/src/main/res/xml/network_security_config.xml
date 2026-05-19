@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Allow cleartext (HTTP) only for local dev server in debug builds -->
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">10.0.2.2</domain>
-        <domain includeSubdomains="false">localhost</domain>
-    </domain-config>
+    <!--
+      Release: HTTPS only. No cleartext exceptions.
+      Certificate pinning is enforced in OkHttp via SSLPinningConfig.
+    -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
 </network-security-config>

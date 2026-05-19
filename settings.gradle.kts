@@ -39,3 +39,10 @@ include(":feature:feature-onboarding")
 include(":feature:feature-dashboard")
 include(":feature:feature-transfers")
 include(":feature:feature-transactions")
+include(":feature:feature-profile")
+include(":feature:feature-about")
+include(":feature:feature-statement")
+
+// Performance
+include(":baselineprofile")
+include(":benchmark")

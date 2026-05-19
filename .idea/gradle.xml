@@ -23,6 +23,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/baselineprofile" />
+            <option value="$PROJECT_DIR$/benchmark" />
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/build-logic/convention" />
             <option value="$PROJECT_DIR$/core" />
@@ -35,9 +37,12 @@
             <option value="$PROJECT_DIR$/core/core-testing" />
             <option value="$PROJECT_DIR$/core/core-ui" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/feature-about" />
             <option value="$PROJECT_DIR$/feature/feature-auth" />
             <option value="$PROJECT_DIR$/feature/feature-dashboard" />
             <option value="$PROJECT_DIR$/feature/feature-onboarding" />
+            <option value="$PROJECT_DIR$/feature/feature-profile" />
+            <option value="$PROJECT_DIR$/feature/feature-statement" />
             <option value="$PROJECT_DIR$/feature/feature-transactions" />
             <option value="$PROJECT_DIR$/feature/feature-transfers" />
           </set>

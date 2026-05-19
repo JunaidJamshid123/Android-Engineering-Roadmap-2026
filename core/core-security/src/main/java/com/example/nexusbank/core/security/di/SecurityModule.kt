@@ -25,8 +25,9 @@ object SecurityModule {
     @Provides
     @Singleton
     fun provideSecurityManager(
+        @ApplicationContext context: Context,
         encryptedPrefs: EncryptedPrefs
-    ): SecurityManager = SecurityManager(encryptedPrefs)
+    ): SecurityManager = SecurityManager(context, encryptedPrefs)
 
     @Provides
     @Singleton

@@ -11,6 +11,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal() // ktlint-gradle is only published here
     }
     versionCatalogs {
         create("libs") {

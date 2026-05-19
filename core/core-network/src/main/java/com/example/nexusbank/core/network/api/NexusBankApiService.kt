@@ -7,11 +7,16 @@ import retrofit2.http.*
 interface NexusBankApiService {
 
     // ── User ──
-    @GET("user/profile")
-    suspend fun getProfile(): Response<UserResponse>
+    @GET("profile")
+    suspend fun getProfile(): Response<ApiResponse<UserDto>>
 
-    @PUT("user/profile")
-    suspend fun updateProfile(@Body request: UpdateProfileRequest): Response<UserResponse>
+    @PATCH("profile")
+    suspend fun updateProfile(@Body request: UpdateProfileRequest): Response<ApiResponse<UserDto>>
+
+    @PATCH("profile/picture")
+    suspend fun updateProfilePicture(
+        @Body request: UpdateProfilePictureRequest
+    ): Response<ApiResponse<UserDto>>
 
     // ── Accounts ──
     @GET("accounts")

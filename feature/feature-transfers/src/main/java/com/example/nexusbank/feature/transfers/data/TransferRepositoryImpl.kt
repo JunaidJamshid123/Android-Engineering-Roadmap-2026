@@ -1,8 +1,8 @@
 package com.example.nexusbank.feature.transfers.data
 
 import com.example.nexusbank.core.domain.util.Resource
-import com.example.nexusbank.core.network.api.AuthApiService
 import com.example.nexusbank.core.network.api.TransferApiService
+import com.example.nexusbank.core.network.api.UserApiService
 import com.example.nexusbank.core.network.model.BankAccountDto
 import com.example.nexusbank.core.network.model.ResolveRecipientData
 import com.example.nexusbank.core.network.model.ResolveRecipientRequest
@@ -17,11 +17,11 @@ import javax.inject.Singleton
 @Singleton
 class TransferRepositoryImpl @Inject constructor(
     private val api: TransferApiService,
-    private val authApi: AuthApiService
+    private val userApi: UserApiService
 ) : TransferRepository {
 
     override suspend fun getMyAccounts(): Resource<List<BankAccountDto>> {
-        return when (val result = safeApiCall { authApi.getMe() }) {
+        return when (val result = safeApiCall { userApi.getMe() }) {
             is NetworkResult.Success -> {
                 val body = result.data
                 if (body.success && body.data != null) {
