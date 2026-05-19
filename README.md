@@ -20,6 +20,9 @@ This project includes a **fully functional, enterprise-grade banking system app*
   <img src="Banking%20App%20SS/Login.png" width="130" />
   <img src="Banking%20App%20SS/Home.png" width="130" />
   <img src="Banking%20App%20SS/drawer.png" width="130" />
+  <img src="Banking%20App%20SS/statement_pdf.png" width="130" />
+  <img src="Banking%20App%20SS/statement.png" width="130" />
+  <img src="Banking%20App%20SS/scan.png" width="130" />
   <img src="Banking%20App%20SS/more.png" width="130" />
   <img src="Banking%20App%20SS/logout.png" width="130" />
   <img src="Banking%20App%20SS/transfer1.png" width="130" />
